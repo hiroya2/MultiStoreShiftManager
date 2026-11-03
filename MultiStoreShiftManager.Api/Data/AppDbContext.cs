@@ -23,6 +23,9 @@ public class AppDbContext : DbContext
     public DbSet<EmployeeAvailableTime> EmployeeAvailableTimes
         => Set<EmployeeAvailableTime>();
 
+    public DbSet<EmployeeWeeklyAvailability> EmployeeWeeklyAvailabilities
+        => Set<EmployeeWeeklyAvailability>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -101,6 +104,20 @@ public class AppDbContext : DbContext
                 t.EmployeeId,
                 t.EffectiveStartDate,
                 t.DayOfWeek
+            });
+
+        modelBuilder.Entity<EmployeeWeeklyAvailability>()
+    .HasOne(w => w.Employee)
+    .WithMany()
+    .HasForeignKey(w => w.EmployeeId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeWeeklyAvailability>()
+            .HasIndex(w => new
+            {
+                w.EmployeeId,
+                w.EffectiveStartDate,
+                w.DayOfWeek
             });
     }
 }
