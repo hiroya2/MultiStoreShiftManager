@@ -115,6 +115,41 @@ namespace MultiStoreShiftManager.Api.Migrations
                     b.ToTable("EmployeeAvailableTimes");
                 });
 
+            modelBuilder.Entity("MultiStoreShiftManager.Api.Models.EmployeeMonthlyPreference", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AvailabilityType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("TargetMonth")
+                        .HasColumnType("date");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId", "TargetMonth", "DayOfWeek")
+                        .IsUnique();
+
+                    b.ToTable("EmployeeMonthlyPreferences");
+                });
+
             modelBuilder.Entity("MultiStoreShiftManager.Api.Models.EmployeeStoreAssignment", b =>
                 {
                     b.Property<int>("Id")
@@ -307,6 +342,17 @@ namespace MultiStoreShiftManager.Api.Migrations
                 });
 
             modelBuilder.Entity("MultiStoreShiftManager.Api.Models.EmployeeAvailableTime", b =>
+                {
+                    b.HasOne("MultiStoreShiftManager.Api.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("MultiStoreShiftManager.Api.Models.EmployeeMonthlyPreference", b =>
                 {
                     b.HasOne("MultiStoreShiftManager.Api.Models.Employee", "Employee")
                         .WithMany()

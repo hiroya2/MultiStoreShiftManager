@@ -29,6 +29,9 @@ public class AppDbContext : DbContext
     public DbSet<EmployeeStoreSupportPreference> EmployeeStoreSupportPreferences
         => Set<EmployeeStoreSupportPreference>();
 
+    public DbSet<EmployeeMonthlyPreference> EmployeeMonthlyPreferences
+        => Set<EmployeeMonthlyPreference>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -142,6 +145,23 @@ public class AppDbContext : DbContext
             {
                 p.EmployeeId,
                 p.StoreId
+            })
+            .IsUnique();
+
+        //月ごとの従業員希望情報の関連付け
+        modelBuilder.Entity<EmployeeMonthlyPreference>()
+            .HasOne(p => p.Employee)
+            .WithMany()
+            .HasForeignKey(p => p.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        //同じ従業員・対象月・曜日の重複登録を防止
+        modelBuilder.Entity<EmployeeMonthlyPreference>()
+            .HasIndex(p => new
+            {
+                p.EmployeeId,
+                p.TargetMonth,
+                p.DayOfWeek
             })
             .IsUnique();
 
