@@ -26,6 +26,9 @@ public class AppDbContext : DbContext
     public DbSet<EmployeeWeeklyAvailability> EmployeeWeeklyAvailabilities
         => Set<EmployeeWeeklyAvailability>();
 
+    public DbSet<EmployeeStoreSupportPreference> EmployeeStoreSupportPreferences
+        => Set<EmployeeStoreSupportPreference>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -119,5 +122,28 @@ public class AppDbContext : DbContext
                 w.EffectiveStartDate,
                 w.DayOfWeek
             });
+
+        //従業員ごとのフォロー先店舗設定
+        modelBuilder.Entity<EmployeeStoreSupportPreference>()
+            .HasOne(p => p.Employee)
+            .WithMany()
+            .HasForeignKey(p => p.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeStoreSupportPreference>()
+            .HasOne(p => p.Store)
+            .WithMany()
+            .HasForeignKey(p => p.StoreId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        //同じ従業員・フォロー先店舗の組み合わせは1件だけ
+        modelBuilder.Entity<EmployeeStoreSupportPreference>()
+            .HasIndex(p => new
+            {
+                p.EmployeeId,
+                p.StoreId
+            })
+            .IsUnique();
+
     }
 }
