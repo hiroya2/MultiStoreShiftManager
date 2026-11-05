@@ -379,6 +379,84 @@ namespace MultiStoreShiftManager.Api.Migrations
                     b.ToTable("Stores");
                 });
 
+            modelBuilder.Entity("MultiStoreShiftManager.Api.Models.StoreDailyStaffingRequirement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<bool>("EndsNextDay")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MinimumStaffCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("RequirementDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoreId", "RequirementDate", "StartTime");
+
+                    b.ToTable("StoreDailyStaffingRequirements");
+                });
+
+            modelBuilder.Entity("MultiStoreShiftManager.Api.Models.StoreStaffingRequirement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<bool>("EndsNextDay")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("MinimumStaffCount")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<int>("StoreId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoreId", "DayOfWeek", "StartTime");
+
+                    b.ToTable("StoreStaffingRequirements");
+                });
+
             modelBuilder.Entity("MultiStoreShiftManager.Api.Models.EmployeeAvailableTime", b =>
                 {
                     b.HasOne("MultiStoreShiftManager.Api.Models.Employee", "Employee")
@@ -470,6 +548,28 @@ namespace MultiStoreShiftManager.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("MultiStoreShiftManager.Api.Models.StoreDailyStaffingRequirement", b =>
+                {
+                    b.HasOne("MultiStoreShiftManager.Api.Models.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("MultiStoreShiftManager.Api.Models.StoreStaffingRequirement", b =>
+                {
+                    b.HasOne("MultiStoreShiftManager.Api.Models.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Store");
                 });
 #pragma warning restore 612, 618
         }

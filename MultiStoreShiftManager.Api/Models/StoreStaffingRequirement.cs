@@ -1,0 +1,33 @@
+﻿
+using System.ComponentModel.DataAnnotations;
+
+namespace MultiStoreShiftManager.Api.Models;
+
+public class StoreStaffingRequirement
+{
+    public int Id { get; set; }
+
+    // 対象店舗
+    public int StoreId { get; set; }
+
+    public Store? Store { get; set; }
+
+    // 曜日（月曜日=1 ～ 日曜日=7）
+    public int DayOfWeek { get; set; }
+
+    // 人数を必要とする時間帯
+    public TimeOnly StartTime { get; set; }
+
+    public TimeOnly EndTime { get; set; }
+
+    // 翌日にまたがる時間帯か
+    public bool EndsNextDay { get; set; }
+
+    // 必要な最低人数
+    [Range(1, 100)]
+    public int MinimumStaffCount { get; set; }
+
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+    public DateTimeOffset? UpdatedAt { get; set; }
+}

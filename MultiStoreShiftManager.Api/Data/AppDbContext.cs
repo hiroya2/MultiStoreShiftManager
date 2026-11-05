@@ -35,6 +35,12 @@ public class AppDbContext : DbContext
     public DbSet<EmployeeShiftRequest> EmployeeShiftRequests
         => Set<EmployeeShiftRequest>();
 
+    public DbSet<StoreStaffingRequirement> StoreStaffingRequirements
+        => Set<StoreStaffingRequirement>();
+
+    public DbSet<StoreDailyStaffingRequirement> StoreDailyStaffingRequirements
+    => Set<StoreDailyStaffingRequirement>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -183,5 +189,37 @@ public class AppDbContext : DbContext
                 r.RequestDate
             })
             .IsUnique();
+
+        //店舗ごとの最低人数設定の関連付け
+        modelBuilder.Entity<StoreStaffingRequirement>()
+            .HasOne(r => r.Store)
+            .WithMany()
+            .HasForeignKey(r => r.StoreId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        //店舗・曜日・時間帯の設定を管理
+        modelBuilder.Entity<StoreStaffingRequirement>()
+            .HasIndex(r => new
+            {
+                r.StoreId,
+                r.DayOfWeek,
+                r.StartTime,
+            });
+
+        // 特定日ごとの最低人数設定の関連付け
+        modelBuilder.Entity<StoreDailyStaffingRequirement>()
+            .HasOne(r => r.Store)
+            .WithMany()
+            .HasForeignKey(r => r.StoreId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // 店舗・対象日・時間帯の検索用インデックス
+        modelBuilder.Entity<StoreDailyStaffingRequirement>()
+            .HasIndex(r => new
+            {
+                r.StoreId,
+                r.RequirementDate,
+                r.StartTime
+            });
     }
 }
