@@ -32,6 +32,9 @@ public class AppDbContext : DbContext
     public DbSet<EmployeeMonthlyPreference> EmployeeMonthlyPreferences
         => Set<EmployeeMonthlyPreference>();
 
+    public DbSet<EmployeeShiftRequest> EmployeeShiftRequests
+        => Set<EmployeeShiftRequest>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -165,5 +168,20 @@ public class AppDbContext : DbContext
             })
             .IsUnique();
 
+        // 日付単位の従業員希望情報の関連付け
+        modelBuilder.Entity<EmployeeShiftRequest>()
+            .HasOne(r => r.Employee)
+            .WithMany()
+            .HasForeignKey(r => r.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // 同じ従業員・希望対象日の重複登録を防止
+        modelBuilder.Entity<EmployeeShiftRequest>()
+            .HasIndex(r => new
+            {
+                r.EmployeeId,
+                r.RequestDate
+            })
+            .IsUnique();
     }
 }
